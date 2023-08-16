@@ -1,6 +1,6 @@
 Iterations: 30
 Total number of nodes: 7115
-Number of communities detected: 29
-Number of communities above threshold: 9
-Median size of communities above threshold: 1070.0
-Minority size: 54
+Number of communities detected: 30
+Number of communities above threshold: 10
+Median size of communities above threshold: 4.5
+Minority size: 56
