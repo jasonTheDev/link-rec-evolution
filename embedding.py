@@ -41,4 +41,9 @@ def predict_most_similar(nx_g, node_vectors):
             if not nx_g.has_edge(node, int(similar_node)):
                 predictions.append((node, int(similar_node)))
                 break
+
+    # print(f"Predictions {len(predictions)} / {nx_g.number_of_nodes()} nodes")
+    assert len(predictions) == nx_g.number_of_nodes()
+
+        
     return predictions
