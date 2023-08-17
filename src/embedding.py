@@ -26,24 +26,35 @@ def word2vec(walks):
     return model.wv
 
 
-def predict_most_similar(nx_g, node_vectors):
+def predict_most_similar(nx_g, node_vectors, directed):
     """
     Returns list of predicted edges.
     """
+    tmp_g = nx_g.copy()
     predictions = []
-    for node in nx_g.nodes():
+    for node in tmp_g.nodes():
         # out_degree + 1 guarantees that at least one edge will be added
-        max_pred = nx_g.out_degree(node) + 1
+        max_pred = tmp_g.out_degree(node) + 1
         most_similar_nodes = node_vectors.most_similar(str(node), topn=max_pred)
 
         # add the top edge that doesn't already exist
         for similar_node, similarity in most_similar_nodes:
-            if not nx_g.has_edge(node, int(similar_node)):
-                predictions.append((node, int(similar_node)))
-                break
+            similar_node = int(similar_node)
+            if not tmp_g.has_edge(node, similar_node):
+                # directed case
+                if directed:
+                    predictions.append((node, similar_node))
+                    tmp_g.add_edge(node, similar_node)
+                    break
+                # undirected case
+                else:
+                    predictions.append((node, similar_node))
+                    tmp_g.add_edge(node, similar_node)
+                    tmp_g.add_edge(similar_node, node)
+                    break
+    
+    if len(predictions) != nx_g.number_of_nodes():
+        print(len(predictions), nx_g.number_of_nodes())
 
-    # print(f"Predictions {len(predictions)} / {nx_g.number_of_nodes()} nodes")
-    assert len(predictions) == nx_g.number_of_nodes()
-
-        
+    assert len(predictions) == nx_g.number_of_nodes()        
     return predictions
