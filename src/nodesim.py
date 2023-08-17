@@ -1,9 +1,11 @@
 # Adapted from: https://github.com/akratiiet/NodeSim
 
-import networkx as nx
-import random
-import networkx.algorithms.community as nx_comm
 import embedding
+import random
+import networkx as nx
+
+# local imports
+import communities as cm
 
 ALPHA = 1.0
 BETA = 2.0
@@ -12,25 +14,15 @@ NUM_WALKS = 5  # Saxena uses 10
 WALK_LENGTH = 40  # Saxena uses 80
 
 
-def add_community_labels(G, comms):
-    """
-    Adds community labels to the NetworkX graph.
-    """
-    node_to_comm = {}
-
-    for comm_index, comm_nodes in enumerate(comms):
-        for node in comm_nodes:
-            node_to_comm[node] = comm_index
-    nx.set_node_attributes(G, node_to_comm, "community")
-    return G
-
-
-def initialize(G):
+def initialize(G, directed):
     """
     Initialize the graph for nodesim random walks.
     """
-    comms = G.get_communities()
-    G = add_community_labels(G, comms)
+    if directed:
+        comms = cm.directed_comms(G)
+    else:
+        comms = cm.undirected_comms(G)
+    G = cm.add_community_labels(G, comms)
     return G
 
 
@@ -120,11 +112,11 @@ def simulate_walks(G):
     return walks
 
 
-def predict(nx_g):
+def predict(nx_g, directed):
     """
     Returns list of predicted edges.
     """
     walks = simulate_walks(nx_g)
     node_vectors = embedding.word2vec(walks)
-    predictions = embedding.predict_most_similar(nx_g, node_vectors)
+    predictions = embedding.predict_most_similar(nx_g, node_vectors, directed)
     return predictions

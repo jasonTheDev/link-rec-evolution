@@ -1,6 +1,5 @@
 Iterations: 30
+Removals: random_removal_per_node
+Predictions: node2vec
 Total number of nodes: 1005
-Number of communities detected: 27
-Number of communities above threshold: 8
-Median size of communities above threshold: 114.5
-Minority size: 356
+Minority size: 151

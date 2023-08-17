@@ -6,7 +6,7 @@ NUM_WALKS = 5  # Saxena uses 10
 WALK_LENGTH = 40  # Saxena uses 80
 
 
-def initialize(G):
+def initialize(G, directed):
     """
     Nothing to do here.
     """
@@ -42,11 +42,11 @@ def simulate_walks(nx_g):
     return walks
 
 
-def predict(nx_g):
+def predict(nx_g, directed):
     """
     Returns list of predicted edges.
     """
     walks = simulate_walks(nx_g)
     node_vectors = embedding.word2vec(walks)
-    predictions = embedding.predict_most_similar(nx_g, node_vectors)
+    predictions = embedding.predict_most_similar(nx_g, node_vectors, directed)
     return predictions
