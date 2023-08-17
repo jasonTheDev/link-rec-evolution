@@ -1,0 +1,5 @@
+Iterations: 30
+Removals: random_removal_per_node
+Predictions: nodesim
+Total number of nodes: 4039
+Minority size: 606
