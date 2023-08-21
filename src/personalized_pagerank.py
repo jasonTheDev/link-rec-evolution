@@ -10,7 +10,7 @@ def initialize(G, directed):
     """
     Initialize the graph for personalized pagerank.
     """
-    G
+    return G
 
 
 def predict(G, directed):
@@ -27,7 +27,7 @@ def predict(G, directed):
 
         # sort nodes by pagerank score
         sorted_nodes = sorted(pr_scores.items(), key=lambda x: x[1], reverse=True)
-        
+
         for predicted_node, score in sorted_nodes:
             predicted_node = int(predicted_node)
             if not tmp_g.has_edge(node, predicted_node):
