@@ -41,20 +41,12 @@ def predict_most_similar(nx_g, node_vectors, directed):
         for similar_node, similarity in most_similar_nodes:
             similar_node = int(similar_node)
             if not tmp_g.has_edge(node, similar_node):
-                # directed case
-                if directed:
-                    predictions.append((node, similar_node))
-                    tmp_g.add_edge(node, similar_node)
-                    break
-                # undirected case
-                else:
-                    predictions.append((node, similar_node))
-                    tmp_g.add_edge(node, similar_node)
+                predictions.append((node, similar_node))
+                tmp_g.add_edge(node, similar_node)
+                if not directed:
+                    # add opposite edge for undirected case
                     tmp_g.add_edge(similar_node, node)
-                    break
-    
-    if len(predictions) != nx_g.number_of_nodes():
-        print(len(predictions), nx_g.number_of_nodes())
+                break
 
     assert len(predictions) == nx_g.number_of_nodes()        
     return predictions
