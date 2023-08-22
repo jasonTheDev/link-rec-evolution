@@ -17,24 +17,24 @@ def predict(G, directed):
     Predict links using personalized pagerank.
     """
     predictions = []
-    tmp_g = G.copy() # keep track of edges
+    tmp_g = G.copy()  # keep track of edges
 
-    # run personalized pagerank for each node
+    # personalized pagerank for each node
     for node in G.nodes():
-        personalization = {node: 1}
-        pr_scores = nx.pagerank(G, alpha=ALPHA, personalization=personalization, tol=TOL)
+        personalization = {node: 1} # start node
 
-        # sort nodes by pagerank score
-        sorted_nodes = sorted(pr_scores.items(), key=lambda x: x[1], reverse=True)
+        # calculate and sort pagerank scores
+        pr_scores = nx.pagerank(G, alpha=ALPHA, personalization=personalization, tol=TOL)
+        sorted_scores = sorted(pr_scores.items(), key=lambda x: x[1], reverse=True)
+
+        neighbors = set(G.successors(node))
 
         # find the top edge that doesn't already exist
-        for predicted_node, score in sorted_nodes:
-            predicted_node = int(predicted_node)
-            if not tmp_g.has_edge(node, predicted_node):
+        for predicted_node, score in sorted_scores:
+            if predicted_node != node and predicted_node not in neighbors:
                 predictions.append((node, predicted_node))
                 tmp_g.add_edge(node, predicted_node)
                 if not directed:
-                    # add opposite edge for undirected case
                     tmp_g.add_edge(predicted_node, node)
                 break
     
