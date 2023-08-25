@@ -5,7 +5,7 @@ ALPHA = 0.85
 TOL = 1e-01 # higher tolerance for faster convergence
 
 
-def initialize(G, directed):
+def initialize(G, directed, protected):
     """
     Initialize the graph for personalized pagerank.
     """

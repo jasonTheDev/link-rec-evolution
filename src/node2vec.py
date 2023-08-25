@@ -6,7 +6,7 @@ NUM_WALKS = 5  # Saxena uses 10
 WALK_LENGTH = 40  # Saxena uses 80
 
 
-def initialize(G, directed):
+def initialize(G, directed, protected):
     """
     Nothing to do here.
     """
