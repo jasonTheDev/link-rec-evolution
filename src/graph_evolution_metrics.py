@@ -1,9 +1,39 @@
+import os
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
 
 PAGERANK_RATIO = 0.1
+
+
+PROTECTED = None # list of protected nodes
+DIRECTED = None
+CLUSTERING_PATH = None
+GINI_PATH = None
+VISIBILITY_PATH = None
+SUMMARY_PATH = None
+PLOT_PATH = None
+
+
+def initialize(nx_g, directed, protected, output_dir, output_prefix):
+    """
+    Initialize global variables for recording metrics.
+    """
+    global PROTECTED, DIRECTED, CLUSTERING_PATH, GINI_PATH, VISIBILITY_PATH, SUMMARY_PATH, PLOT_PATH
+
+    PROTECTED = protected
+    DIRECTED = directed
+
+    CLUSTERING_PATH = os.path.join(output_dir, output_prefix + ".clu")
+    GINI_PATH = os.path.join(output_dir, output_prefix + ".gin")
+    VISIBILITY_PATH = os.path.join(output_dir, output_prefix + ".vis")
+    SUMMARY_PATH = os.path.join(output_dir, output_prefix + ".sum")
+    PLOT_PATH = os.path.join(output_dir, output_prefix + ".png")
+
+    # TODO: should we automatically clear metric files?
+    # or should we do it manually?
+
 
 
 def gini_of_list(x):
@@ -27,10 +57,11 @@ def gini_of_degree_distribution(nx_g):
     return gini_of_list(in_degrees)
 
 
-def pagerank_visibility(nx_g, nodes):
+def pagerank_visibility(nx_g):
     """
     Returns the fraction of nodes in the top PAGERANK_RATIO of pagerank.
     """
+    nodes = PROTECTED.copy()
     # get number of nodes in top percent
     num_nodes_in_top = int(nx_g.number_of_nodes() * PAGERANK_RATIO)
     # run pagerank
@@ -43,6 +74,35 @@ def pagerank_visibility(nx_g, nodes):
     # find the fraction of given nodes in top pagerank
     visibility = float(len([node for node in nodes if node in top_pr_list]) / num_nodes_in_top)
     return visibility
+
+
+def eigen_centrality_visibility(nx_g):
+    """
+    Returns the fraction of nodes in the top PAGERANK_RATIO of eigen centrality.
+    """
+    nodes = PROTECTED.copy()
+    # get number of nodes in top percent
+    num_nodes_in_top = int(nx_g.number_of_nodes() * PAGERANK_RATIO)
+    # run pagerank
+    ec = nx.eigenvector_centrality(nx_g)
+    # convert pagerank to list and sort
+    ec_list = list(ec.items())
+    ec_list.sort(key=lambda x: x[1], reverse=True)
+    # get the top nodes
+    top_ec_list = [node for (node, ranking) in ec_list[:num_nodes_in_top]]
+    # find the fraction of given nodes in top pagerank
+    visibility = float(len([node for node in nodes if node in top_ec_list]) / num_nodes_in_top)
+    return visibility
+
+
+def visibility(nx_g):
+    """
+    Wrapper for visibility function.
+    """
+    if DIRECTED:
+        return pagerank_visibility(nx_g)
+    else:
+        return eigen_centrality_visibility(nx_g)
 
 
 def average_clustering(nx_g):
@@ -83,3 +143,21 @@ def list_to_file(file_path, values):
     with open(file_path, 'w') as f:
         for value in values:
             f.write(str(value) + '\n')
+
+
+def record_metrics(nx_g):
+    """
+    Record the metrics for the given graph.
+    """
+    gini = gini_of_degree_distribution(nx_g)
+    cluster = average_clustering(nx_g)
+    visibility = visibility(nx_g)
+
+    # append metrics to file
+    with open(CLUSTERING_PATH, 'a') as f:
+        f.write(str(cluster) + '\n')
+    with open(GINI_PATH, 'a') as f:
+        f.write(str(gini) + '\n')
+    with open(VISIBILITY_PATH, 'a') as f:
+        f.write(str(visibility) + '\n')
+    
