@@ -50,7 +50,7 @@ def evolve_network(nx_g, minorities):
     visibilities = [metrics.pagerank_visibility(nx_g, minorities)]
 
     # prepare for algorithm
-    nx_g = alg.initialize(nx_g, directed=DIRECTED)
+    nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
     print("Iteration")
     print(f"0: {nx_g}")
