@@ -83,9 +83,9 @@ def eigen_centrality_visibility(nx_g):
     nodes = PROTECTED.copy()
     # get number of nodes in top percent
     num_nodes_in_top = int(nx_g.number_of_nodes() * PAGERANK_RATIO)
-    # run pagerank
+    # run ec
     ec = nx.eigenvector_centrality(nx_g)
-    # convert pagerank to list and sort
+    # convert ec to list and sort
     ec_list = list(ec.items())
     ec_list.sort(key=lambda x: x[1], reverse=True)
     # get the top nodes
@@ -95,14 +95,13 @@ def eigen_centrality_visibility(nx_g):
     return visibility
 
 
-def visibility(nx_g):
+def centrality_visibility(nx_g):
     """
     Wrapper for visibility function.
     """
     if DIRECTED:
         return pagerank_visibility(nx_g)
-    else:
-        return eigen_centrality_visibility(nx_g)
+    return eigen_centrality_visibility(nx_g)
 
 
 def average_clustering(nx_g):
@@ -151,7 +150,7 @@ def record_metrics(nx_g):
     """
     gini = gini_of_degree_distribution(nx_g)
     cluster = average_clustering(nx_g)
-    visibility = visibility(nx_g)
+    visibility = centrality_visibility(nx_g)
 
     # append metrics to file
     with open(CLUSTERING_PATH, 'a') as f:
