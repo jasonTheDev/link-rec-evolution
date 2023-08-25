@@ -16,6 +16,11 @@ SUMMARY_PATH = None
 PLOT_PATH = None
 
 
+ginis = []
+clusters = []
+visibilities = []
+
+
 def initialize(nx_g, directed, protected, output_dir, output_prefix):
     """
     Initialize global variables for recording metrics.
@@ -30,6 +35,14 @@ def initialize(nx_g, directed, protected, output_dir, output_prefix):
     VISIBILITY_PATH = os.path.join(output_dir, output_prefix + ".vis")
     SUMMARY_PATH = os.path.join(output_dir, output_prefix + ".sum")
     PLOT_PATH = os.path.join(output_dir, output_prefix + ".png")
+
+    # clear metric files
+    with open(CLUSTERING_PATH, 'w') as f:
+        pass
+    with open(GINI_PATH, 'w') as f:
+        pass
+    with open(VISIBILITY_PATH, 'w') as f:
+        pass
 
     # TODO: should we automatically clear metric files?
     # or should we do it manually?
@@ -148,9 +161,16 @@ def record_metrics(nx_g):
     """
     Record the metrics for the given graph.
     """
+    global ginis, clusters, visibilities
+
     gini = gini_of_degree_distribution(nx_g)
     cluster = average_clustering(nx_g)
     visibility = centrality_visibility(nx_g)
+
+    # append metrics to lists
+    ginis.append(gini)
+    clusters.append(cluster)
+    visibilities.append(visibility)
 
     # append metrics to file
     with open(CLUSTERING_PATH, 'a') as f:
