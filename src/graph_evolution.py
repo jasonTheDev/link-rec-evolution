@@ -47,10 +47,14 @@ def evolve_network(nx_g, minorities):
     # initial metrics
     ginis = [metrics.gini_of_degree_distribution(nx_g)]
     clusters = [nx.average_clustering(nx_g)]
-    visibilities = [metrics.pagerank_visibility(nx_g, minorities)]
+    visibilities = []
+    if DIRECTED:
+        visibilities.append(metrics.pagerank_visibility(nx_g, minorities))
+    else:
+        visibilities.append(metrics.eigenvector_visibility(nx_g, minorities))
 
     # prepare for algorithm
-    nx_g = alg.initialize(nx_g, directed=DIRECTED)
+    nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
     print("Iteration")
     print(f"0: {nx_g}")
@@ -66,7 +70,10 @@ def evolve_network(nx_g, minorities):
         # compute metrics
         ginis.append(metrics.gini_of_degree_distribution(nx_g))
         clusters.append(metrics.average_clustering(nx_g))
-        visibilities.append(metrics.pagerank_visibility(nx_g, minorities))
+        if DIRECTED:
+            visibilities.append(metrics.pagerank_visibility(nx_g, minorities))
+        else:
+            visibilities.append(metrics.eigenvector_visibility(nx_g, minorities))
   
         if i % 2 == 0:
             print(f"{i}: {nx_g}")
@@ -96,7 +103,7 @@ def main():
     end = time.time()
     print(f"Time elapsed: {end - start}")
 
-    # plot data
+    # record data
     metrics.plot_to_file(PLOT_PATH, ginis, clusters, visibilities)
     metrics.list_to_file(GINI_PATH, ginis)
     metrics.list_to_file(CLUSTERING_PATH, clusters)

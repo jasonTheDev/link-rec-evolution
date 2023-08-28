@@ -4,7 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-PAGERANK_RATIO = 0.1
+VISIBILITY_RATIO = 0.1
 
 
 PROTECTED = None # list of protected nodes
@@ -72,8 +72,9 @@ def gini_of_degree_distribution(nx_g):
 
 def pagerank_visibility(nx_g):
     """
-    Returns the fraction of nodes in the top PAGERANK_RATIO of pagerank.
+    Returns the fraction of nodes in the top VISIBILITY_RATIO of pagerank.
     """
+<<<<<<< HEAD
     nodes = PROTECTED.copy()
     # get number of nodes in top percent
     num_nodes_in_top = int(nx_g.number_of_nodes() * PAGERANK_RATIO)
@@ -82,10 +83,34 @@ def pagerank_visibility(nx_g):
     # convert pagerank to list and sort
     pr_list = list(pr.items())
     pr_list.sort(key=lambda x: x[1], reverse=True)
+=======
+    ranking_dict = nx.pagerank(nx_g)
+    return get_visibility(nx_g, nodes, ranking_dict)
+
+
+def eigenvector_visibility(nx_g, nodes):
+    """
+    Returns the fraction of nodes in the top VISIBILITY_RATIO of eigenvector centrality.
+    """
+    ranking_dict = nx.eigenvector_centrality(nx_g)
+    return get_visibility(nx_g, nodes, ranking_dict)
+
+
+def get_visibility(nx_g, nodes, ranking_dict):
+    """
+    Returns the visibility of the given nodes.
+    """
+    # sort the ranking
+    ranking_list = list(ranking_dict.items())
+    ranking_list.sort(key=lambda x: x[1], reverse=True)
+
+>>>>>>> main
     # get the top nodes
-    top_pr_list = [node for (node, ranking) in pr_list[:num_nodes_in_top]]
-    # find the fraction of given nodes in top pagerank
-    visibility = float(len([node for node in nodes if node in top_pr_list]) / num_nodes_in_top)
+    num_visible = int(nx_g.number_of_nodes() * VISIBILITY_RATIO)
+    visible_nodes = [node for (node, ranking) in ranking_list[:num_visible]]
+
+    # find the fraction of visible nodes
+    visibility = float(len([node for node in nodes if node in visible_nodes]) / num_visible)
     return visibility
 
 
