@@ -3,8 +3,80 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-VISIBILITY_RATIO = 0.1
+class Recorder:
+    def __init__(self, 
+                 directed,
+                 protected, 
+                 visibility_ratio, 
+                 plot_path, 
+                 gini_path, 
+                 cluster_path, 
+                 visibility_path):
+                 
+        self.directed = directed
+        self.protected = protected
+        self.visibility_ratio = visibility_ratio
 
+        self.plot_path = plot_path
+        self.gini_path = gini_path
+        self.cluster_path = cluster_path
+        self.visibility_path = visibility_path
+
+    
+    def clear_files(self):
+        """
+        Clears the files for the metrics.
+        """
+        open(self.gini_path, 'w').close()
+        open(self.cluster_path, 'w').close()
+        open(self.visibility_path, 'w').close()
+        open(self.plot_path, 'w').close()
+
+    
+    def record_metrics(self, nx_g):
+        """
+        Records the gini coefficient, cluster coefficient and protected
+        visibility for the given graph.
+        """
+        gini = gini_of_degree_distribution(nx_g)
+        cluster = average_clustering(nx_g)
+        visibility = get_visibility(nx_g, self.directed, self.protected, self.visibility_ratio)
+
+        append_to_file(self.gini_path, gini)
+        append_to_file(self.cluster_path, cluster)
+        append_to_file(self.visibility_path, visibility)
+
+
+    def plot_metrics(self):
+        """
+        Plot the gini coefficient, cluster coefficient and minority 
+        visibility for each iteration.
+        """
+        ginis = from_file(self.gini_path)
+        clusters = from_file(self.cluster_path)
+        visibilities = from_file(self.visibility_path)
+
+        fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+        ax[0].plot(ginis)
+        ax[0].set_title("Gini Coefficient")
+        ax[0].set_xlabel("Iteration")
+        ax[0].set_ylabel("Gini Coefficient")
+        ax[0].set_ylim(0, 1)
+        ax[1].plot(clusters)
+        ax[1].set_title("Cluster Coefficient")
+        ax[1].set_xlabel("Iteration")
+        ax[1].set_ylabel("Cluster Coefficient")
+        ax[1].set_ylim(0, 1)
+        ax[2].plot(visibilities)
+        ax[2].set_title("Minority Visibility")
+        ax[2].set_xlabel("Iteration")
+        ax[2].set_ylabel("Fraction of Minority Nodes")
+        ax[2].set_ylim(0, 1)
+        plt.show()
+
+        # write plot to file
+        fig.savefig(self.plot_path)
+        
 
 def gini_of_list(x):
     """
@@ -27,32 +99,21 @@ def gini_of_degree_distribution(nx_g):
     return gini_of_list(in_degrees)
 
 
-def pagerank_visibility(nx_g, nodes):
-    """
-    Returns the fraction of nodes in the top VISIBILITY_RATIO of pagerank.
-    """
-    ranking_dict = nx.pagerank(nx_g)
-    return get_visibility(nx_g, nodes, ranking_dict)
-
-
-def eigenvector_visibility(nx_g, nodes):
-    """
-    Returns the fraction of nodes in the top VISIBILITY_RATIO of eigenvector centrality.
-    """
-    ranking_dict = nx.eigenvector_centrality(nx_g)
-    return get_visibility(nx_g, nodes, ranking_dict)
-
-
-def get_visibility(nx_g, nodes, ranking_dict):
+def get_visibility(nx_g, directed, nodes, visibility_ratio):
     """
     Returns the visibility of the given nodes.
     """
+    if directed:
+        ranking_dict = nx.pagerank(nx_g)
+    else:
+        ranking_dict = nx.eigenvector_centrality(nx_g)
+
     # sort the ranking
     ranking_list = list(ranking_dict.items())
     ranking_list.sort(key=lambda x: x[1], reverse=True)
 
     # get the top nodes
-    num_visible = int(nx_g.number_of_nodes() * VISIBILITY_RATIO)
+    num_visible = int(nx_g.number_of_nodes() * visibility_ratio)
     visible_nodes = [node for (node, ranking) in ranking_list[:num_visible]]
 
     # find the fraction of visible nodes
@@ -67,34 +128,11 @@ def average_clustering(nx_g):
     return nx.average_clustering(nx_g)
 
 
-def plot_to_file(file_path, ginis, clusters, visibilities):
-    """
-    Plot the gini coefficient, cluster coefficient and minority 
-    visibility for each iteration.
-    """
-    fig, ax = plt.subplots(1, 3, figsize=(15, 5))
-    ax[0].plot(ginis)
-    ax[0].set_title("Gini Coefficient")
-    ax[0].set_xlabel("Iteration")
-    ax[0].set_ylabel("Gini Coefficient")
-    ax[0].set_ylim(0, 1)
-    ax[1].plot(clusters)
-    ax[1].set_title("Cluster Coefficient")
-    ax[1].set_xlabel("Iteration")
-    ax[1].set_ylabel("Cluster Coefficient")
-    ax[1].set_ylim(0, 1)
-    ax[2].plot(visibilities)
-    ax[2].set_title("Minority Visibility")
-    ax[2].set_xlabel("Iteration")
-    ax[2].set_ylabel("Fraction of Minority Nodes")
-    ax[2].set_ylim(0, 1)
-    plt.show()
-
-    # write plot to file
-    fig.savefig(file_path)
+def append_to_file(file_path, value):
+    with open(file_path, 'a') as f:
+        f.write(str(value) + '\n')
 
 
-def list_to_file(file_path, values):
-    with open(file_path, 'w') as f:
-        for value in values:
-            f.write(str(value) + '\n')
+def from_file(filename):
+    with open(filename, 'r') as f:
+        return [float(line.strip()) for line in f]
