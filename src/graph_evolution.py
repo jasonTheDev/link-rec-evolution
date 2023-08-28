@@ -9,7 +9,7 @@ import networkx as nx
 import graph_evolution_metrics as metrics
 
 ## CHANGE TO MATCH ALG AND DATASET
-import personalized_pagerank as alg # addition alg
+import fair_ppagerank as alg # addition alg
 import random_removal_per_node as rm # removal alg
 
 # Graph Evolution

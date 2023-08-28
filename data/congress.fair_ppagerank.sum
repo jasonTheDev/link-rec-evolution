@@ -1,0 +1,5 @@
+Iterations: 30
+Removals: random_removal_per_node
+Predictions: fair_ppagerank
+Total number of nodes: 475
+Minority size: 71
