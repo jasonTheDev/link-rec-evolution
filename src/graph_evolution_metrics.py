@@ -8,19 +8,17 @@ class Recorder:
                  directed,
                  protected, 
                  visibility_ratio, 
-                 plot_path, 
-                 gini_path, 
-                 cluster_path, 
-                 visibility_path):
+                 output_dir,
+                 output_prefix):
                  
         self.directed = directed
         self.protected = protected
         self.visibility_ratio = visibility_ratio
 
-        self.plot_path = plot_path
-        self.gini_path = gini_path
-        self.cluster_path = cluster_path
-        self.visibility_path = visibility_path
+        self.plot_path = os.path.join(output_dir, output_prefix + ".png")
+        self.gini_path = os.path.join(output_dir, output_prefix + ".gin")
+        self.cluster_path = os.path.join(output_dir, output_prefix + ".clu")
+        self.visibility_path = os.path.join(output_dir, output_prefix + ".vis")
 
     
     def clear_files(self):
