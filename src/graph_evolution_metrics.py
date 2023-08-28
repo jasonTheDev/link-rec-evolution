@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -115,7 +116,7 @@ def get_visibility(nx_g, directed, nodes, visibility_ratio):
     visible_nodes = [node for (node, ranking) in ranking_list[:num_visible]]
 
     # find the fraction of visible nodes
-    visibility = float(len([node for node in nodes if node in visible_nodes]) / num_visible)
+    visibility = len([node for node in nodes if node in visible_nodes]) / float(num_visible)
     return visibility
 
 

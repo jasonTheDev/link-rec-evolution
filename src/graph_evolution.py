@@ -15,6 +15,9 @@ import random_removal_per_node as rm # removal alg
 # Graph Evolution
 ITERATIONS = 30
 
+# Metrics
+VISIBILITY_RATIO = 0.1
+
 # Constants for I/O
 INPUT_DIR = "../input"
 OUTPUT_DIR = "../data"
@@ -44,17 +47,19 @@ def evolve_network(nx_g, minorities):
     """
     Iteratively evolve the network by adding and removing edges.
     """
-    # initial metrics
-    ginis = [metrics.gini_of_degree_distribution(nx_g)]
-    clusters = [nx.average_clustering(nx_g)]
-    visibilities = []
-    if DIRECTED:
-        visibilities.append(metrics.pagerank_visibility(nx_g, minorities))
-    else:
-        visibilities.append(metrics.eigenvector_visibility(nx_g, minorities))
-
-    # prepare for algorithm
+    # initialize algorithm
     nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
+
+    # initialize recorder for metrics
+    recorder = metrics.Recorder(directed=DIRECTED,
+                            protected=minorities,
+                            visibility_ratio=VISIBILITY_RATIO,
+                            output_dir=OUTPUT_DIR,
+                            output_prefix=OUTPUT_PREFIX)
+    
+    # initial metrics
+    recorder.clear_files()
+    recorder.record_metrics(nx_g)
 
     print("Iteration")
     print(f"0: {nx_g}")
@@ -68,17 +73,12 @@ def evolve_network(nx_g, minorities):
         remove_edges(nx_g, removals)
 
         # compute metrics
-        ginis.append(metrics.gini_of_degree_distribution(nx_g))
-        clusters.append(metrics.average_clustering(nx_g))
-        if DIRECTED:
-            visibilities.append(metrics.pagerank_visibility(nx_g, minorities))
-        else:
-            visibilities.append(metrics.eigenvector_visibility(nx_g, minorities))
-  
+        recorder.record_metrics(nx_g)
+
         if i % 2 == 0:
             print(f"{i}: {nx_g}")
     
-    return ginis, clusters, visibilities
+    return recorder
 
 
 def main():
@@ -99,22 +99,12 @@ def main():
 
     # evolve the network
     start = time.time()
-    ginis, clusters, visibilities = evolve_network(init_g, minorities)
+    recorder = evolve_network(init_g, minorities)
     end = time.time()
     print(f"Time elapsed: {end - start}")
 
-    # record data
-    metrics.plot_to_file(PLOT_PATH, ginis, clusters, visibilities)
-    metrics.list_to_file(GINI_PATH, ginis)
-    metrics.list_to_file(CLUSTERING_PATH, clusters)
-    metrics.list_to_file(VISIBILITY_PATH, visibilities)
-
-    with open(SUMMARY_PATH, 'w') as f:
-        f.write(f"Iterations: {ITERATIONS}\n")
-        f.write(f"Removals: {rm.__name__}\n")
-        f.write(f"Predictions: {alg.__name__}\n")
-        f.write(f"Total number of nodes: {init_g.number_of_nodes()}\n")
-        f.write(f"Minority size: {len(minorities)}\n")
+    # plot metrics
+    recorder.plot_metrics()
 
 
 if __name__ == "__main__":
@@ -127,12 +117,6 @@ if __name__ == "__main__":
     DIRECTED = args.directed
 
     OUTPUT_PREFIX = BASENAME + "." + alg.__name__
-    
-    CLUSTERING_PATH = os.path.join(OUTPUT_DIR, OUTPUT_PREFIX + ".clu")
-    GINI_PATH = os.path.join(OUTPUT_DIR, OUTPUT_PREFIX + ".gin")
-    VISIBILITY_PATH = os.path.join(OUTPUT_DIR, OUTPUT_PREFIX + ".vis")
-    SUMMARY_PATH = os.path.join(OUTPUT_DIR, OUTPUT_PREFIX + ".sum")
-    PLOT_PATH = os.path.join(OUTPUT_DIR, OUTPUT_PREFIX + ".png")
 
     EDGELIST = BASENAME + ".txt"
     MINORITIES = BASENAME + ".minorities"
