@@ -26,13 +26,13 @@ def word2vec(walks):
     return model.wv
 
 
-def predict_most_similar(nx_g, node_vectors, directed):
+def predict_most_similar(nx_g, node_vectors, directed, nodes):
     """
     Returns list of predicted edges.
     """
     tmp_g = nx_g.copy()
     predictions = []
-    for node in tmp_g.nodes():
+    for node in nodes:
         # out_degree + 1 guarantees that at least one edge will be added
         max_pred = tmp_g.out_degree(node) + 1
         most_similar_nodes = node_vectors.most_similar(str(node), topn=max_pred)
@@ -48,5 +48,5 @@ def predict_most_similar(nx_g, node_vectors, directed):
                     tmp_g.add_edge(similar_node, node)
                 break
 
-    assert len(predictions) == nx_g.number_of_nodes()        
+    assert len(predictions) == len(nodes)   
     return predictions

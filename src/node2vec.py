@@ -42,11 +42,11 @@ def simulate_walks(nx_g):
     return walks
 
 
-def predict(nx_g, directed):
+def predict(nx_g, directed, nodes):
     """
     Returns list of predicted edges.
     """
     walks = simulate_walks(nx_g)
     node_vectors = embedding.word2vec(walks)
-    predictions = embedding.predict_most_similar(nx_g, node_vectors, directed)
+    predictions = embedding.predict_most_similar(nx_g, node_vectors, directed, nodes)
     return predictions
