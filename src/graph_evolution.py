@@ -9,11 +9,7 @@ import networkx as nx
 import graph_evolution_metrics as metrics
 
 ## CHANGE TO MATCH ALG AND DATASET
-<<<<<<< HEAD
 import plocal_fair_ppr as alg # addition alg
-=======
-import node2vec as alg # addition alg
->>>>>>> 71657dd8aa35ab26340d68573f0f0fc5807c2f2a
 import random_removal_per_node as rm # removal alg
 
 from selection import SelectAll as Selector
