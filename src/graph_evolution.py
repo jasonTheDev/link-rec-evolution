@@ -9,8 +9,14 @@ import networkx as nx
 import graph_evolution_metrics as metrics
 
 ## CHANGE TO MATCH ALG AND DATASET
+<<<<<<< HEAD
 import plocal_fair_ppr as alg # addition alg
+=======
+import node2vec as alg # addition alg
+>>>>>>> 71657dd8aa35ab26340d68573f0f0fc5807c2f2a
 import random_removal_per_node as rm # removal alg
+
+from selection import SelectAll as Selector
 
 # Graph Evolution
 ITERATIONS = 30
@@ -50,6 +56,9 @@ def evolve_network(nx_g, minorities):
     # initialize algorithm
     nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
+    # initialize selection
+    selector = Selector(nx_g, directed=DIRECTED, protected=minorities)
+
     # initialize recorder for metrics
     recorder = metrics.Recorder(directed=DIRECTED,
                             protected=minorities,
@@ -66,10 +75,14 @@ def evolve_network(nx_g, minorities):
 
     for i in range(1, ITERATIONS+1):
 
-        predictions = alg.predict(nx_g, directed=DIRECTED)
+        # predictions
+        to_predict = selector.nodes_to_predict(nx_g)
+        predictions = alg.predict(nx_g, directed=DIRECTED, nodes=to_predict)
         add_edges(nx_g, predictions)
 
-        removals = rm.removals(nx_g, directed=DIRECTED)
+        # removals
+        to_remove = selector.nodes_to_remove(nx_g)
+        removals = rm.removals(nx_g, directed=DIRECTED, nodes=to_remove)
         remove_edges(nx_g, removals)
 
         # compute metrics
