@@ -12,7 +12,7 @@ def initialize(G, directed, protected):
     return G
 
 
-def predict(G, directed):
+def predict(G, directed, nodes):
     """
     Predict links using personalized pagerank.
     """
@@ -20,7 +20,7 @@ def predict(G, directed):
     tmp_g = G.copy()  # keep track of edges
 
     # personalized pagerank for each node
-    for node in G.nodes():
+    for node in nodes:
         personalization = {node: 1} # start node
 
         # calculate and sort pagerank scores
