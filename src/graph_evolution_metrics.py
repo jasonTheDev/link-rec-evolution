@@ -111,6 +111,7 @@ def get_visibility(nx_g, directed, nodes, visibility_ratio):
     ranking_list = list(ranking_dict.items())
     ranking_list.sort(key=lambda x: x[1], reverse=True)
 
+
     # get the top nodes
     num_visible = int(nx_g.number_of_nodes() * visibility_ratio)
     visible_nodes = [node for (node, ranking) in ranking_list[:num_visible]]

@@ -10,8 +10,7 @@ from graph_evolution_metrics import Recorder
 
 ## CHANGE TO MATCH ALG AND DATASET
 import node2vec as alg
-from edge_selection import DegreesGreaterThanOne as RemovalSelector
-from node_selection import SelectAll as NodeSelector
+from methods import OtherMethod as Method
 
 # Graph Evolution
 ITERATIONS = 30
@@ -48,14 +47,11 @@ def evolve_network(nx_g, minorities):
     """
     Iteratively evolve the network by adding and removing edges.
     """
-# initialize algorithm
+    # initialize algorithm
     nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
-    # initialize selector
-    node_selector = NodeSelector(nx_g, directed=DIRECTED, protected=minorities)
-
-    # initialize remover
-    removal_selector = RemovalSelector(nx_g, directed=DIRECTED, protected=minorities)
+    # initialize method
+    method = Method(nx_g, directed=DIRECTED, protected=minorities)
 
     # initialize recorder
     recorder = Recorder(directed=DIRECTED,
@@ -73,12 +69,11 @@ def evolve_network(nx_g, minorities):
 
     for i in range(1, ITERATIONS+1):
 
-        to_predict = node_selector.nodes_to_predict(nx_g)
+        to_predict = method.nodes_to_predict(nx_g)
         predictions = alg.predict(nx_g, directed=DIRECTED, nodes=to_predict)
         add_edges(nx_g, predictions)
 
-        to_remove = node_selector.nodes_to_remove(nx_g)
-        removals = removal_selector.select_edges(nx_g, directed=DIRECTED, nodes=to_remove)
+        removals = method.edges_to_remove(nx_g)
         remove_edges(nx_g, removals)
 
         # compute metrics
