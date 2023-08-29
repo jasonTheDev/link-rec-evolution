@@ -6,13 +6,11 @@ import numpy as np
 import networkx as nx
 
 # local imports
-import graph_evolution_metrics as metrics
+from metrics import Recorder
 
 ## CHANGE TO MATCH ALG AND DATASET
-import plocal_fair_ppr as alg # addition alg
-import random_removal_per_node as rm # removal alg
-
-from selection import SelectAll as Selector
+import node2vec as alg
+from methods import OtherMethod as Method
 
 # Graph Evolution
 ITERATIONS = 30
@@ -52,15 +50,15 @@ def evolve_network(nx_g, minorities):
     # initialize algorithm
     nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
-    # initialize selection
-    selector = Selector(nx_g, directed=DIRECTED, protected=minorities)
+    # initialize method
+    method = Method(nx_g, directed=DIRECTED, protected=minorities)
 
-    # initialize recorder for metrics
-    recorder = metrics.Recorder(directed=DIRECTED,
-                            protected=minorities,
-                            visibility_ratio=VISIBILITY_RATIO,
-                            output_dir=OUTPUT_DIR,
-                            output_prefix=OUTPUT_PREFIX)
+    # initialize recorder
+    recorder = Recorder(directed=DIRECTED,
+                        protected=minorities,
+                        visibility_ratio=VISIBILITY_RATIO,
+                        output_dir=OUTPUT_DIR,
+                        output_prefix=OUTPUT_PREFIX)
     
     # initial metrics
     recorder.clear_files()
@@ -71,14 +69,11 @@ def evolve_network(nx_g, minorities):
 
     for i in range(1, ITERATIONS+1):
 
-        # predictions
-        to_predict = selector.nodes_to_predict(nx_g)
+        to_predict = method.nodes_to_predict(nx_g)
         predictions = alg.predict(nx_g, directed=DIRECTED, nodes=to_predict)
         add_edges(nx_g, predictions)
 
-        # removals
-        to_remove = selector.nodes_to_remove(nx_g)
-        removals = rm.removals(nx_g, directed=DIRECTED, nodes=to_remove)
+        removals = method.edges_to_remove(nx_g)
         remove_edges(nx_g, removals)
 
         # compute metrics
