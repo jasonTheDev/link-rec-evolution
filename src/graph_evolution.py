@@ -6,7 +6,7 @@ import numpy as np
 import networkx as nx
 
 # local imports
-from graph_evolution_metrics import Recorder
+from metrics import Recorder
 
 ## CHANGE TO MATCH ALG AND DATASET
 import node2vec as alg
