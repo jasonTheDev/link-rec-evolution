@@ -10,9 +10,9 @@ import graph_evolution_metrics as metrics
 
 ## CHANGE TO MATCH ALG AND DATASET
 import plocal_fair_ppr as alg # addition alg
-import edge_selection as rm # removal alg
+import selection.edge_selection as rm # removal alg
 
-from node_selection import SelectAll as Selector
+from selection.node_selection import SelectAll as Selector
 
 # Graph Evolution
 ITERATIONS = 30
