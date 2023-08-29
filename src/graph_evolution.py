@@ -10,7 +10,7 @@ import graph_evolution_metrics as metrics
 
 ## CHANGE TO MATCH ALG AND DATASET
 import plocal_fair_ppr as alg # addition alg
-import random_removal_per_node as rm # removal alg
+import removals as rm # removal alg
 
 from selection import SelectAll as Selector
 
