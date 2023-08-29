@@ -6,13 +6,12 @@ import numpy as np
 import networkx as nx
 
 # local imports
-import graph_evolution_metrics as metrics
+from graph_evolution_metrics import Recorder
 
 ## CHANGE TO MATCH ALG AND DATASET
-import plocal_fair_ppr as alg # addition alg
-import selection.edge_selection as rm # removal alg
-
-from selection.node_selection import SelectAll as Selector
+import node2vec as alg
+from edge_selection import DegreesGreaterThanOne as RemovalSelector
+from node_selection import SelectAll as NodeSelector
 
 # Graph Evolution
 ITERATIONS = 30
@@ -49,18 +48,21 @@ def evolve_network(nx_g, minorities):
     """
     Iteratively evolve the network by adding and removing edges.
     """
-    # initialize algorithm
+# initialize algorithm
     nx_g = alg.initialize(nx_g, directed=DIRECTED, protected=minorities)
 
-    # initialize selection
-    selector = Selector(nx_g, directed=DIRECTED, protected=minorities)
+    # initialize selector
+    node_selector = NodeSelector(nx_g, directed=DIRECTED, protected=minorities)
 
-    # initialize recorder for metrics
-    recorder = metrics.Recorder(directed=DIRECTED,
-                            protected=minorities,
-                            visibility_ratio=VISIBILITY_RATIO,
-                            output_dir=OUTPUT_DIR,
-                            output_prefix=OUTPUT_PREFIX)
+    # initialize remover
+    removal_selector = RemovalSelector(nx_g, directed=DIRECTED, protected=minorities)
+
+    # initialize recorder
+    recorder = Recorder(directed=DIRECTED,
+                        protected=minorities,
+                        visibility_ratio=VISIBILITY_RATIO,
+                        output_dir=OUTPUT_DIR,
+                        output_prefix=OUTPUT_PREFIX)
     
     # initial metrics
     recorder.clear_files()
@@ -71,14 +73,12 @@ def evolve_network(nx_g, minorities):
 
     for i in range(1, ITERATIONS+1):
 
-        # predictions
-        to_predict = selector.nodes_to_predict(nx_g)
+        to_predict = node_selector.nodes_to_predict(nx_g)
         predictions = alg.predict(nx_g, directed=DIRECTED, nodes=to_predict)
         add_edges(nx_g, predictions)
 
-        # removals
-        to_remove = selector.nodes_to_remove(nx_g)
-        removals = rm.removals(nx_g, directed=DIRECTED, nodes=to_remove)
+        to_remove = node_selector.nodes_to_remove(nx_g)
+        removals = removal_selector.select_edges(nx_g, directed=DIRECTED, nodes=to_remove)
         remove_edges(nx_g, removals)
 
         # compute metrics
