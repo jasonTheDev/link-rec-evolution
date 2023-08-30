@@ -3,21 +3,22 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
-# for eigenvector centrality
+# eigenvector centrality
 MAX_ITER = 1000
 TOL = 1e-03
+
+# visibility
+VISIBILITY_RATIO = 0.1
 
 class Recorder:
     def __init__(self, 
                  directed,
                  protected, 
-                 visibility_ratio, 
                  output_dir,
                  output_prefix):
                  
         self.directed = directed
         self.protected = protected
-        self.visibility_ratio = visibility_ratio
 
         self.plot_path = os.path.join(output_dir, output_prefix + ".png")
         self.gini_path = os.path.join(output_dir, output_prefix + ".gin")
@@ -32,7 +33,11 @@ class Recorder:
         open(self.gini_path, 'w').close()
         open(self.cluster_path, 'w').close()
         open(self.visibility_path, 'w').close()
-        open(self.plot_path, 'w').close()
+        try:
+            os.remove(self.plot_path)
+        except OSError:
+            # wipe file to avoid confusion
+            open(self.plot_path, 'w').close()
 
     
     def record_metrics(self, nx_g):
@@ -42,7 +47,7 @@ class Recorder:
         """
         gini = gini_of_degree_distribution(nx_g)
         cluster = average_clustering(nx_g)
-        visibility = get_visibility(nx_g, self.directed, self.protected, self.visibility_ratio)
+        visibility = get_visibility(nx_g, self.directed, self.protected)
 
         append_to_file(self.gini_path, gini)
         append_to_file(self.cluster_path, cluster)
@@ -101,7 +106,7 @@ def gini_of_degree_distribution(nx_g):
     return gini_of_list(in_degrees)
 
 
-def get_visibility(nx_g, directed, nodes, visibility_ratio):
+def get_visibility(nx_g, directed, nodes):
     """
     Returns the visibility of the given nodes.
     """
@@ -116,7 +121,7 @@ def get_visibility(nx_g, directed, nodes, visibility_ratio):
 
 
     # get the top nodes
-    num_visible = int(nx_g.number_of_nodes() * visibility_ratio)
+    num_visible = int(nx_g.number_of_nodes() * VISIBILITY_RATIO)
     visible_nodes = [node for (node, ranking) in ranking_list[:num_visible]]
 
     # find the fraction of visible nodes

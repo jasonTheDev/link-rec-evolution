@@ -15,9 +15,6 @@ from methods import OtherMethod as Method
 # Graph Evolution
 ITERATIONS = 30
 
-# Metrics
-VISIBILITY_RATIO = 0.1
-
 # Constants for I/O
 INPUT_DIR = "../input"
 OUTPUT_DIR = "../data"
@@ -56,7 +53,6 @@ def evolve_network(nx_g, minorities):
     # initialize recorder
     recorder = Recorder(directed=DIRECTED,
                         protected=minorities,
-                        visibility_ratio=VISIBILITY_RATIO,
                         output_dir=OUTPUT_DIR,
                         output_prefix=OUTPUT_PREFIX)
     
