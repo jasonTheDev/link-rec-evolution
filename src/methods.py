@@ -41,8 +41,8 @@ class OtherMethod():
 
 def select_edges(nx_g, directed, nodes):
     """
-    Returns a list of random outgoing edges per node
-    in nodes where both have degree > 1.
+    Returns a list containing one random outgoing edges per node
+    in nodes where in_degree > 1 and out_degree > 1.
     """
     tmp_g = nx_g.copy()
     selected_edges = []
