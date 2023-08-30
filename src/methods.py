@@ -2,7 +2,10 @@ import random
 import networkx as nx
 
 
+# TODO: better name?
 class Wagner2022():
+    NAME = "wagner" # For Driver    
+
     def __init__(self, nx_g, directed, protected):
         self.directed = directed
         self._nodes = list(nx_g.nodes())
@@ -21,7 +24,10 @@ class Wagner2022():
         return select_edges(nx_g, self.directed, nodes)
     
 
+# just an example for now
 class OtherMethod():
+    NAME = "other" # For Driver
+    
     def __init__(self, nx_g, directed, protected):
         self._nodes = list(nx_g.nodes())
 
@@ -41,8 +47,8 @@ class OtherMethod():
 
 def select_edges(nx_g, directed, nodes):
     """
-    Returns a list of random outgoing edges per node
-    in nodes where both have degree > 1.
+    Returns a list containing one random outgoing edges per node
+    in nodes where in_degree > 1 and out_degree > 1.
     """
     tmp_g = nx_g.copy()
     selected_edges = []

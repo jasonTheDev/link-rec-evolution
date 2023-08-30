@@ -1,5 +1,8 @@
 import networkx as nx
+import random
 
+
+NAME = "ppr" # For Driver
 
 ALPHA = 0.85
 TOL = 1e-01 # higher tolerance for faster convergence
@@ -20,6 +23,7 @@ def predict(G, directed, nodes):
     tmp_g = G.copy()  # keep track of edges
 
     # personalized pagerank for each node
+    random.shuffle(nodes)
     for node in nodes:
         personalization = {node: 1} # start node
 
@@ -27,7 +31,7 @@ def predict(G, directed, nodes):
         pr_scores = nx.pagerank(G, alpha=ALPHA, personalization=personalization, tol=TOL)
         sorted_scores = sorted(pr_scores.items(), key=lambda x: x[1], reverse=True)
 
-        neighbors = set(G.successors(node))
+        neighbors = set(tmp_g.successors(node))
 
         # find the top edge that doesn't already exist
         for predicted_node, score in sorted_scores:
