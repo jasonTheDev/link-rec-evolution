@@ -26,7 +26,7 @@ PPR = "import algs.ppr as alg"
 
 # to test
 methods = [ WAGNER ]
-datasets = [ CONGRESS ]
+datasets = [ CONGRESS, FACEBOOK ]
 alg_imports = [ FAIRWALK, NODE2VEC, NODESIM, PPR ]
 
 
@@ -124,7 +124,14 @@ if __name__ == "__main__":
 
             # for each algorithm to test
             for alg_import in alg_imports:
+                start = time.time()
                 exec(alg_import) # import the algorithm
+
+                if VERBOSE:
+                    print(f"----------------------------------------------")
+                    print(f"Method: {Method.NAME}")
+                    print(f"Dataset: {basename}")
+                    print(f"Algorithm: {alg.NAME}")
 
                 # file paths
                 ouput_prefix = f"{basename}.{Method.NAME}.{alg.NAME}"
@@ -154,18 +161,8 @@ if __name__ == "__main__":
                 # initialize method
                 method = Method(init_g, directed=directed, protected=minorities)
 
-                if VERBOSE:
-                    print(f"----------------------------------------------")
-                    print(f"Method: {Method.NAME}")
-                    print(f"Dataset: {basename}")
-                    print(f"Algorithm: {alg.NAME}")
-
                 # evolve the network
-                start = time.time()
                 final_g = evolve_network(init_g, directed, minorities, recorder, method)
-                end = time.time()
-                if VERBOSE:
-                    print(f"Time elapsed: {end - start}")
 
                 # plot metrics
                 recorder.plot_metrics(show=False)
@@ -175,3 +172,7 @@ if __name__ == "__main__":
                     nx.write_edgelist(final_g, evolved_edgelist_path, data=False)
                 else:
                     nx.write_edgelist(final_g.to_undirected(), evolved_edgelist_path, data=False)
+
+                end = time.time()
+                if VERBOSE:
+                    print(f"Time elapsed: {end - start}")
