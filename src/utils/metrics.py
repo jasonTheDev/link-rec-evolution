@@ -36,8 +36,7 @@ class Recorder:
         try:
             os.remove(self.plot_path)
         except OSError:
-            # wipe file to avoid confusion
-            open(self.plot_path, 'w').close()
+            pass
 
     
     def record_metrics(self, nx_g):
@@ -54,7 +53,7 @@ class Recorder:
         append_to_file(self.visibility_path, visibility)
 
 
-    def plot_metrics(self):
+    def plot_metrics(self, show=True):
         """
         Plot the gini coefficient, cluster coefficient and minority 
         visibility for each iteration.
@@ -79,7 +78,9 @@ class Recorder:
         ax[2].set_xlabel("Iteration")
         ax[2].set_ylabel("Fraction of Minority Nodes")
         ax[2].set_ylim(0, 1)
-        plt.show()
+        
+        if show:
+            plt.show()
 
         # write plot to file
         fig.savefig(self.plot_path)

@@ -30,10 +30,6 @@ datasets = [ CONGRESS ]
 alg_imports = [ FAIRWALK, NODE2VEC, NODESIM, PPR ]
 
 
-# Graph Evolution
-ITERATIONS = 5
-RESET_EVOLUTION = True
-
 # Constants for I/O
 INPUT_DIR = "../input"
 OUTPUT_DIR = "../data"
@@ -85,12 +81,10 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
     """
     # initialize algorithm
     nx_g = alg.initialize(nx_g, directed=directed, protected=minorities)
-    
-    # initial metrics
-    recorder.record_metrics(nx_g)
 
-    print("Iteration")
-    print(f"0: {nx_g}")
+    if VERBOSE:
+        print("Iteration")
+        print(f"0: {nx_g}")
 
     for i in range(1, ITERATIONS+1):
 
@@ -104,13 +98,23 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
         # compute metrics
         recorder.record_metrics(nx_g.copy())
   
-        if i % 2 == 0:
+        if VERBOSE and i % 2 == 0:
             print(f"{i}: {nx_g}")
     
     return nx_g
 
 
-def main():
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Graph Evolution: Multiple Methods, Datasets, Algorithms")
+    parser.add_argument("--iterations", type=int, default=30, help="Number of iterations")
+    parser.add_argument("--continue", dest="reset", action="store_false", help="Continue evolution from last iteration")
+    parser.add_argument("--silent", dest="verbose", action="store_false", help="Silence output")
+    args = parser.parse_args()
+
+    RESET_EVOLUTION = args.reset
+    ITERATIONS = args.iterations
+    VERBOSE = args.verbose
+
     # for each method to test
     for method_import in methods:
         exec(method_import) # import the method
@@ -139,31 +143,35 @@ def main():
                 if RESET_EVOLUTION:
                     init_g = get_graph(edgelist_path, directed)
                     recorder.clear_files()
+                    recorder.record_metrics(init_g)
                 else:
-                    init_g = get_graph(evolved_edgelist_path, directed)
+                    try:
+                        init_g = get_graph(evolved_edgelist_path, directed)
+                    except FileNotFoundError:
+                        print(f"Error: {evolved_edgelist_path} not found. Skipping dataset.")
+                        continue # skip if not found
                 
                 # initialize method
                 method = Method(init_g, directed=directed, protected=minorities)
 
-                print(f"Method: {Method.__name__}")
-                print(f"Dataset: {basename}")
-                print(f"Algorithm: {alg.__name__}")
+                if VERBOSE:
+                    print(f"----------------------------------------------")
+                    print(f"Method: {Method.NAME}")
+                    print(f"Dataset: {basename}")
+                    print(f"Algorithm: {alg.NAME}")
 
                 # evolve the network
                 start = time.time()
                 final_g = evolve_network(init_g, directed, minorities, recorder, method)
                 end = time.time()
-                print(f"Time elapsed: {end - start}")
+                if VERBOSE:
+                    print(f"Time elapsed: {end - start}")
 
                 # plot metrics
-                recorder.plot_metrics()
+                recorder.plot_metrics(show=False)
 
                 # write evolved graph to file
                 if directed:
                     nx.write_edgelist(final_g, evolved_edgelist_path, data=False)
                 else:
                     nx.write_edgelist(final_g.to_undirected(), evolved_edgelist_path, data=False)
-
-
-if __name__ == "__main__":
-    main()
