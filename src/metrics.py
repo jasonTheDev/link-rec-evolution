@@ -3,6 +3,9 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
+# for eigenvector centrality
+MAX_ITER = 1000
+TOL = 1e-03
 
 class Recorder:
     def __init__(self, 
@@ -105,7 +108,7 @@ def get_visibility(nx_g, directed, nodes, visibility_ratio):
     if directed:
         ranking_dict = nx.pagerank(nx_g)
     else:
-        ranking_dict = nx.eigenvector_centrality(nx_g)
+        ranking_dict = nx.eigenvector_centrality(nx_g, max_iter=MAX_ITER, tol=TOL)
 
     # sort the ranking
     ranking_list = list(ranking_dict.items())

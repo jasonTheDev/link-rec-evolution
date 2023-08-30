@@ -49,7 +49,7 @@ def select_edges(nx_g, directed, nodes):
 
     random.shuffle(nodes)
     for node in nodes:
-        if nx_g.out_degree(node) > 1:
+        if tmp_g.out_degree(node) > 1:
             successors = list(tmp_g.successors(node))
             random.shuffle(successors)
             for successor in successors:
