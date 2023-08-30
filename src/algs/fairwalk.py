@@ -1,10 +1,11 @@
 import networkx as nx
 import random
-import embedding
+import utils.embedding as embedding
+
+NAME = "fairwalk" # For Driver
 
 NUM_WALKS = 5
 WALK_LENGTH = 40
-
 
 def initialize(G, directed, protected):
     """

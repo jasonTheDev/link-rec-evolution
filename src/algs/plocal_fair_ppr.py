@@ -2,6 +2,8 @@ import numpy as np
 import networkx as nx
 import random
 
+NAME = "plocal_fair_ppr" # For Driver
+
 
 class PLFPRfromPaper:
     #initialize

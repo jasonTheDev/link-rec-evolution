@@ -1,6 +1,9 @@
 import networkx as nx
 import random
-import embedding
+import utils.embedding as embedding
+
+
+NAME = "node2vec" # For Driver
 
 NUM_WALKS = 5  # Saxena uses 10
 WALK_LENGTH = 40  # Saxena uses 80

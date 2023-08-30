@@ -1,11 +1,12 @@
 # Adapted from: https://github.com/akratiiet/NodeSim
-
-import embedding
 import random
 import networkx as nx
 
 # local imports
-import communities as cm
+import utils.communities as cm
+import utils.embedding as embedding
+
+NAME = "nodesim" # For Driver
 
 ALPHA = 1.0
 BETA = 2.0

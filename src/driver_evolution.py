@@ -1,15 +1,13 @@
 import argparse
 import os
-import random
 import time
-import numpy as np
 import networkx as nx
 
 # local imports
-from metrics import Recorder
+from utils.metrics import Recorder
 
 ## CHANGE TO MATCH ALG AND DATASET
-import node2vec as alg
+import algs.node2vec as alg
 from methods import OtherMethod as Method
 
 # Graph Evolution
@@ -37,9 +35,7 @@ def remove_edges(nx_g, edges):
     if not DIRECTED:
         nx_g.remove_edges_from([(v, u) for (u, v) in edges])
 
-    
-# IMPORTANT: we do deletions to keep a baseline for the clustering coefficient and 
-# see the effect of the algorithm on the graphs structure
+
 def evolve_network(nx_g, minorities):
     """
     Iteratively evolve the network by adding and removing edges.
@@ -116,15 +112,12 @@ if __name__ == "__main__":
     BASENAME = args.basename
     DIRECTED = args.directed
 
-    OUTPUT_PREFIX = BASENAME + "." + alg.__name__
+    OUTPUT_PREFIX = f"{BASENAME}.{Method.NAME}.{alg.NAME}"
 
     EDGELIST = BASENAME + ".txt"
     MINORITIES = BASENAME + ".minorities"
     EDGELIST_PATH = os.path.join(INPUT_DIR, EDGELIST)
     MINORITIES_PATH = os.path.join(INPUT_DIR, MINORITIES)
-
-    # Seed
-    random.seed(42)
 
     main()
 

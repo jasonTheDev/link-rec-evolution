@@ -1,6 +1,8 @@
 import networkx as nx
 
 
+NAME = "ppr" # For Driver
+
 ALPHA = 0.85
 TOL = 1e-01 # higher tolerance for faster convergence
 
