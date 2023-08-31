@@ -23,14 +23,14 @@ class Wagner2022():
         nodes = self._nodes.copy()
         return select_edges(nx_g, self.directed, nodes)
     
-    def preform_method(nx_g, alg):
+    def preform_method(self, nx_g, predict):
         """
         Preform method.
         """
         nodes = self.nodes_to_predict(nx_g)
         random.shuffle(nodes)
 
-        predictions = alg.predict(nx_g, directed=self.directed, nodes=nodes)
+        predictions = predict(nx_g, directed=self.directed, nodes=nodes)
         add_edges(nx_g, self.directed, predictions)
 
         removals = self.edges_to_remove(nx_g)

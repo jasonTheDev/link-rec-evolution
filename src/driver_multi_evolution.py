@@ -27,7 +27,7 @@ PPR = "import algs.ppr as alg"
 # to test
 methods = [ WAGNER ]
 datasets = [ CONGRESS, FACEBOOK ]
-alg_imports = [ FAIRWALK, NODE2VEC, NODESIM, PPR ]
+alg_imports = [ FAIRWALK, NODE2VEC, NODESIM ]
 
 
 # Constants for I/O
@@ -70,7 +70,8 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
 
     for i in range(1, ITERATIONS+1):
 
-        method.preform_method(nx_g, alg)
+        # let method handle additions, removals and their order
+        method.preform_method(nx_g, alg.predict)
 
         # compute metrics
         recorder.record_metrics(nx_g.copy())
