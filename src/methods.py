@@ -25,7 +25,8 @@ class Wagner2022():
     
     def preform_method(self, nx_g, predict):
         """
-        Preform method.
+        Predictions for all nodes each iteration.
+        One edge per node removed.
         """
         nodes = self.nodes_to_predict(nx_g)
         random.shuffle(nodes)
@@ -45,6 +46,7 @@ class OtherMethod():
     NAME = "other" # For Driver
     
     def __init__(self, nx_g, directed, protected):
+        self.directed = directed
         self._nodes = list(nx_g.nodes())
 
     def nodes_to_predict(self, nx_g):
@@ -54,11 +56,18 @@ class OtherMethod():
         nodes = self._nodes.copy()
         return random.sample(nodes, int(len(nodes) * 0.1))
     
-    def edges_to_remove(self, nx_g):
+    def preform_method(self, nx_g, predict):
         """
-        Return empty list. No removals.
+        Predictions for a random 10% of nodes each iteration.
+        No deletions.
         """
-        return []
+        nodes = self.nodes_to_predict(nx_g)
+        random.shuffle(nodes)
+
+        predictions = predict(nx_g, directed=self.directed, nodes=nodes)
+        add_edges(nx_g, self.directed, predictions)
+
+        return nx_g
     
 
 def select_edges(nx_g, directed, nodes):

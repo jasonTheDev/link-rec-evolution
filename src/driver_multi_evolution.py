@@ -25,7 +25,7 @@ FAIRWALK = "import algs.fairwalk as alg"
 PPR = "import algs.ppr as alg"
 
 # to test
-methods = [ WAGNER ]
+methods = [ OTHERMETHOD ]
 datasets = [ CONGRESS, FACEBOOK ]
 alg_imports = [ FAIRWALK, NODE2VEC, NODESIM ]
 
