@@ -35,24 +35,6 @@ INPUT_DIR = "../input"
 OUTPUT_DIR = "../data"
 
 
-def add_edges(nx_g, directed, edges):
-    """
-    Adds edges to given graph.
-    """
-    nx_g.add_edges_from(edges)
-    if not directed:
-        nx_g.add_edges_from([(v, u) for (u, v) in edges])
-
-
-def remove_edges(nx_g, directed, edges):
-    """
-    Removes edges from given graph.
-    """
-    nx_g.remove_edges_from(edges)
-    if not directed:
-        nx_g.remove_edges_from([(v, u) for (u, v) in edges])
-
-
 def get_minority_nodes(file_path):
     """
     Returns a list of minority nodes.
@@ -88,12 +70,7 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
 
     for i in range(1, ITERATIONS+1):
 
-        to_predict = method.nodes_to_predict(nx_g)
-        predictions = alg.predict(nx_g, directed=directed, nodes=to_predict)
-        add_edges(nx_g, directed, predictions)
-
-        removals = method.edges_to_remove(nx_g)
-        remove_edges(nx_g, directed, removals)
+        method.preform_method(nx_g, alg)
 
         # compute metrics
         recorder.record_metrics(nx_g.copy())

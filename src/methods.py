@@ -23,6 +23,22 @@ class Wagner2022():
         nodes = self._nodes.copy()
         return select_edges(nx_g, self.directed, nodes)
     
+    def preform_method(nx_g, alg):
+        """
+        Preform method.
+        """
+        nodes = self.nodes_to_predict(nx_g)
+        random.shuffle(nodes)
+
+        predictions = alg.predict(nx_g, directed=self.directed, nodes=nodes)
+        add_edges(nx_g, self.directed, predictions)
+
+        removals = self.edges_to_remove(nx_g)
+        random.shuffle(removals)
+        remove_edges(nx_g, self.directed, removals)
+
+        return nx_g
+    
 
 # just an example for now
 class OtherMethod():
@@ -68,4 +84,22 @@ def select_edges(nx_g, directed, nodes):
 
     assert len(selected_edges) <= len(nodes)
     return selected_edges
+
+
+def add_edges(nx_g, directed, edges):
+    """
+    Adds edges to given graph.
+    """
+    nx_g.add_edges_from(edges)
+    if not directed:
+        nx_g.add_edges_from([(v, u) for (u, v) in edges])
+
+
+def remove_edges(nx_g, directed, edges):
+    """
+    Removes edges from given graph.
+    """
+    nx_g.remove_edges_from(edges)
+    if not directed:
+        nx_g.remove_edges_from([(v, u) for (u, v) in edges])
         
