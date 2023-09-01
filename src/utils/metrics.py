@@ -115,6 +115,8 @@ def get_visibility(nx_g, directed, nodes):
         ranking_dict = nx.pagerank(nx_g)
     else:
         ranking_dict = nx.pagerank(nx_g)
+
+        # Other option for undirected graphs
         # ranking_dict = nx.eigenvector_centrality(nx_g, max_iter=MAX_ITER, tol=TOL)
 
     # sort the ranking

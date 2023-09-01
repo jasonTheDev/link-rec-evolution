@@ -2,7 +2,6 @@ import random
 import networkx as nx
 
 
-# TODO: better name?
 class Wagner2022():
     NAME = "wagner" # For Driver    
 
@@ -24,9 +23,9 @@ class Wagner2022():
         return select_edges(nx_g, self.directed, nodes)
     
 
-# just an example for now
+# just an example
 class OtherMethod():
-    NAME = "other" # For Driver
+    NAME = "ten_percent_no_removals" # For Driver
     
     def __init__(self, nx_g, directed, protected):
         self._nodes = list(nx_g.nodes())
