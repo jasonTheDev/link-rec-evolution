@@ -12,10 +12,15 @@ def initialize(G, directed, protected):
     Nothing to do here.
     """
     # add a protected attribute to each node
+    protected_dict = {}
     for node in G.nodes():
-        G.nodes[node]['protected'] = False
+        assert type(node) == int
+        protected_dict[node] = False
     for node in protected:
-        G.nodes[node]['protected'] = True
+        assert type(node) == int
+        protected_dict[node] = True
+
+    nx.set_node_attributes(G, protected_dict, 'protected')
     return G
 
 
