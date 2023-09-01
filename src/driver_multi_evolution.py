@@ -18,18 +18,21 @@ FACEBOOK = "facebook", False
 LASTFM = "lastfm", False
 DEEZER = "deezer", False
 
-# algorithms
+# walk based algorithms
 NODE2VEC = "import algs.node2vec as alg"
 NODESIM = "import algs.nodesim as alg"
 FAIRWALK = "import algs.fairwalk as alg"
+
+# pagerank based algorithms
 PPR = "import algs.ppr as alg"
 ULOCALPPR = "import algs.ulocal_fair_ppr as alg"
 NLOCALPPR = "import algs.nlocal_fair_ppr as alg"
+PLOCALPPR = "import algs.plocal_fair_ppr as alg"
 
 # to test
 methods = [ WAGNER ]
-datasets = [ FACEBOOK ]
-alg_imports = [ ULOCALPPR, NLOCALPPR ]
+datasets = [ CONGRESS, EMAIL_EU, FACEBOOK, LASTFM ]
+alg_imports = [ NODE2VEC, NODESIM, FAIRWALK ]
 
 
 # Constants for I/O
