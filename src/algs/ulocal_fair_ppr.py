@@ -2,10 +2,10 @@ import numpy as np
 import networkx as nx
 import random
 
-NAME = "plocal_fair_ppr" # For Driver
+NAME = "ulocal_fair_ppr" # For Driver
 
 
-class PLFPRfromPaper:
+class ULFPRfromPaper:
     #initialize
     def __init__(self, graph = None, edge_file = 'out_graph.txt', 
                      community_file = 'out_community.txt',  
@@ -137,14 +137,11 @@ class PLFPRfromPaper:
         PO = self.get_initial_pr()
         
         
-        sumR_PO = sum(PO[i] for i in self.C1)
-        sumB_PO = 1-sumR_PO
-        
-        x = [PO[i]/sumR_PO if i in self.C1
+        x = [1/len(self.C1) if i in self.C1
             else 0.0
             for i in range(self.nnode)] 
         
-        y = [PO[i]/sumB_PO if i in self.C2 
+        y = [1/len(self.C2) if i in self.C2 
             else 0.0
             for i in range(self.nnode)]
         X = np.outer(self.deltaR, x)
@@ -359,5 +356,5 @@ def initialize(G, directed, protected):
     
     
 def predict(G, directed,nodes):
-    plfpr = PLFPRfromPaper(graph = G, undirected = not directed)
-    return list(plfpr.process(nodes))
+    ulfpr = ULFPRfromPaper(graph = G, undirected = not directed)
+    return list(ulfpr.process(nodes))
