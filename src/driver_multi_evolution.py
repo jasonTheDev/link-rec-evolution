@@ -31,8 +31,8 @@ PLOCALPPR = "import algs.plocal_fair_ppr as alg"
 
 # to test
 methods = [ WAGNER ]
-datasets = [ DEEZER, WIKI_VOTE ]
-alg_imports = [ NODE2VEC, NODESIM, FAIRWALK ]
+datasets = [ CONGRESS, EMAIL_EU, FACEBOOK, LASTFM ]
+alg_imports = [ FAIRWALK ]
 
 
 # Constants for I/O
