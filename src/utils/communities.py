@@ -19,14 +19,14 @@ def add_community_labels(G, comms):
 
 def undirected_comms(G):
     """
-    Returns a list of communities in the graph.
+    Returns a list of communities in the graph, as detected by Louvain.
     """
     return nx_comm.louvain_communities(G)
 
 
 def directed_comms(G):
     """
-    Returns a list of communities in the graph.
+    Returns a list of communities in the graph, as detected by leidenalg.
     """
     # convert to igraph
     G_igraph = Graph.TupleList(G.edges(), directed=True)
