@@ -130,7 +130,7 @@ if __name__ == "__main__":
     VERBOSE = args.verbose
 
     for percent in minority_percentages:
-        # output directory for this minority percentage
+        # output directory for this minoritypercentage
         OUTPUT_DIR = os.path.join(DATA_DIR, percent)
 
         # create output directory if it doesn't exist
