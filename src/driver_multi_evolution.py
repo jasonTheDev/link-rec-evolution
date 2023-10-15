@@ -32,16 +32,16 @@ PLOCALPPR = "import algs.plocal_fair_ppr as alg"
 # percentages of the nodes considered to be the minorities
 ## NEEDS to match filenames in input/
 PERCENT10 = "10percent"
-PERCENT15 = "15percent"
+# PERCENT15 = "15percent"
 PERCENT20 = "20percent"
 PERCENT25 = "25percent"
 PERCENT30 = "30percent"
 
 # to test
-methods = [ WAGNER ]
-datasets = [ CONGRESS, EMAIL_EU, FACEBOOK, LASTFM ]
-alg_imports = [ FAIRWALK ]
-minority_percentages = [ PERCENT10, PERCENT20, PERCENT25, PERCENT30]
+methods = [ WAGNER, OTHERMETHOD ]
+datasets = [ CONGRESS, EMAIL_EU, WIKI_VOTE, FACEBOOK, LASTFM, DEEZER ]
+alg_imports = [ NODE2VEC, NODESIM, FAIRWALK ]
+minority_percentages = [ PERCENT10 ]
 
 
 # Constants for I/O
@@ -151,6 +151,7 @@ if __name__ == "__main__":
 
                     if VERBOSE:
                         print(f"----------------------------------------------")
+                        print(f"Minority Percentage: {percent}")
                         print(f"Method: {Method.NAME}")
                         print(f"Dataset: {basename}")
                         print(f"Algorithm: {alg.NAME}")

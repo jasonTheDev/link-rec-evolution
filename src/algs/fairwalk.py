@@ -9,9 +9,8 @@ WALK_LENGTH = 40
 
 def initialize(G, directed, protected):
     """
-    Nothing to do here.
+    Add a protected attribute to each node
     """
-    # add a protected attribute to each node
     protected_dict = {}
     for node in G.nodes():
         assert type(node) == int
