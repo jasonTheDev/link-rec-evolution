@@ -41,7 +41,7 @@ PERCENT30 = "30percent"
 methods = [ WAGNER, OTHERMETHOD ]
 datasets = [ CONGRESS, EMAIL_EU, WIKI_VOTE, FACEBOOK, LASTFM, DEEZER ]
 alg_imports = [ NODE2VEC, NODESIM, FAIRWALK ]
-minority_percentages = [ PERCENT10 ]
+minority_percentages = [ PERCENT25 ]
 
 
 # Constants for I/O
