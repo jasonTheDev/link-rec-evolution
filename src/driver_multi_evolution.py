@@ -31,6 +31,7 @@ PLOCALPPR = "import algs.plocal_fair_ppr as alg"
 
 # percentages of the nodes considered to be the minorities
 ## NEEDS to match filenames in input/
+PERCENT05 = "05percent"
 PERCENT10 = "10percent"
 # PERCENT15 = "15percent"
 PERCENT20 = "20percent"
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     VERBOSE = args.verbose
 
     for percent in minority_percentages:
-        # output directory for this minoritypercentage
+        # output directory for this minority percentage
         OUTPUT_DIR = os.path.join(DATA_DIR, percent)
 
         # create output directory if it doesn't exist
