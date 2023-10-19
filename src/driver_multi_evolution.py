@@ -29,15 +29,25 @@ ULOCALPPR = "import algs.ulocal_fair_ppr as alg"
 NLOCALPPR = "import algs.nlocal_fair_ppr as alg"
 PLOCALPPR = "import algs.plocal_fair_ppr as alg"
 
+# percentages of the nodes considered to be the minorities
+## NEEDS to match filenames in input/
+PERCENT05 = "05percent"
+PERCENT10 = "10percent"
+# PERCENT15 = "15percent"
+PERCENT20 = "20percent"
+PERCENT25 = "25percent"
+PERCENT30 = "30percent"
+
 # to test
-methods = [ WAGNER ]
-datasets = [ CONGRESS, EMAIL_EU, FACEBOOK, LASTFM ]
-alg_imports = [ FAIRWALK ]
+methods = [ WAGNER, OTHERMETHOD ]
+datasets = [ CONGRESS, EMAIL_EU, WIKI_VOTE, FACEBOOK, LASTFM, DEEZER ]
+alg_imports = [ NODE2VEC, NODESIM, FAIRWALK ]
+minority_percentages = [ PERCENT25 ]
 
 
 # Constants for I/O
 INPUT_DIR = "../input"
-OUTPUT_DIR = "../data"
+DATA_DIR = "../data"
 
 
 def add_edges(nx_g, directed, edges):
@@ -120,64 +130,73 @@ if __name__ == "__main__":
     ITERATIONS = args.iterations
     VERBOSE = args.verbose
 
-    # for each method to test
-    for method_import in methods:
-        exec(method_import) # import the method
+    for percent in minority_percentages:
+        # output directory for this minority percentage
+        OUTPUT_DIR = os.path.join(DATA_DIR, percent)
 
-        # for each dataset to test
-        for basename, directed in datasets:
+        # create output directory if it doesn't exist
+        if not os.path.exists(OUTPUT_DIR):
+            os.makedirs(OUTPUT_DIR)
 
-            # for each algorithm to test
-            for alg_import in alg_imports:
-                start = time.time()
-                exec(alg_import) # import the algorithm
+        # for each method to test
+        for method_import in methods:
+            exec(method_import) # import the method
 
-                if VERBOSE:
-                    print(f"----------------------------------------------")
-                    print(f"Method: {Method.NAME}")
-                    print(f"Dataset: {basename}")
-                    print(f"Algorithm: {alg.NAME}")
+            # for each dataset to test
+            for basename, directed in datasets:
 
-                # file paths
-                ouput_prefix = f"{basename}.{Method.NAME}.{alg.NAME}"
-                minorities_path = os.path.join(INPUT_DIR, basename + ".minorities")
-                edgelist_path = os.path.join(INPUT_DIR, basename + ".txt")
-                evolved_edgelist_path = os.path.join(OUTPUT_DIR, ouput_prefix + ".txt")
+                # for each algorithm to test
+                for alg_import in alg_imports:
+                    start = time.time()
+                    exec(alg_import) # import the algorithm
 
-                minorities = get_minority_nodes(minorities_path)
+                    if VERBOSE:
+                        print(f"----------------------------------------------")
+                        print(f"Minority Percentage: {percent}")
+                        print(f"Method: {Method.NAME}")
+                        print(f"Dataset: {basename}")
+                        print(f"Algorithm: {alg.NAME}")
 
-                # initialize recorder
-                recorder = Recorder(directed=directed,
-                                    protected=minorities,
-                                    output_dir=OUTPUT_DIR,
-                                    output_prefix=ouput_prefix)
-                
-                if RESET_EVOLUTION:
-                    init_g = get_graph(edgelist_path, directed)
-                    recorder.clear_files()
-                    recorder.record_metrics(init_g)
-                else:
-                    try:
-                        init_g = get_graph(evolved_edgelist_path, directed)
-                    except FileNotFoundError:
-                        print(f"Error: {evolved_edgelist_path} not found. Skipping dataset.")
-                        continue # skip if not found
-                
-                # initialize method
-                method = Method(init_g, directed=directed, protected=minorities)
+                    # file paths
+                    ouput_prefix = f"{basename}.{Method.NAME}.{alg.NAME}"
+                    minorities_path = os.path.join(INPUT_DIR, basename + percent + ".minorities")
+                    edgelist_path = os.path.join(INPUT_DIR, basename + ".txt")
+                    evolved_edgelist_path = os.path.join(OUTPUT_DIR, ouput_prefix + ".txt")
 
-                # evolve the network
-                final_g = evolve_network(init_g, directed, minorities, recorder, method)
+                    minorities = get_minority_nodes(minorities_path)
 
-                # plot metrics
-                recorder.plot_metrics(show=False)
+                    # initialize recorder
+                    recorder = Recorder(directed=directed,
+                                        protected=minorities,
+                                        output_dir=OUTPUT_DIR,
+                                        output_prefix=ouput_prefix)
+                    
+                    if RESET_EVOLUTION:
+                        init_g = get_graph(edgelist_path, directed)
+                        recorder.clear_files()
+                        recorder.record_metrics(init_g)
+                    else:
+                        try:
+                            init_g = get_graph(evolved_edgelist_path, directed)
+                        except FileNotFoundError:
+                            print(f"Error: {evolved_edgelist_path} not found. Skipping dataset.")
+                            continue # skip if not found
+                    
+                    # initialize method
+                    method = Method(init_g, directed=directed, protected=minorities)
 
-                # write evolved graph to file
-                if directed:
-                    nx.write_edgelist(final_g, evolved_edgelist_path, data=False)
-                else:
-                    nx.write_edgelist(final_g.to_undirected(), evolved_edgelist_path, data=False)
+                    # evolve the network
+                    final_g = evolve_network(init_g, directed, minorities, recorder, method)
 
-                end = time.time()
-                if VERBOSE:
-                    print(f"Time elapsed: {end - start}")
+                    # plot metrics
+                    recorder.plot_metrics(show=False)
+
+                    # write evolved graph to file
+                    if directed:
+                        nx.write_edgelist(final_g, evolved_edgelist_path, data=False)
+                    else:
+                        nx.write_edgelist(final_g.to_undirected(), evolved_edgelist_path, data=False)
+
+                    end = time.time()
+                    if VERBOSE:
+                        print(f"Time elapsed: {end - start}")
