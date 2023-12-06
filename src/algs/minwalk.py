@@ -148,7 +148,6 @@ def get_valid_nodes(G,ratio_minority_in_all):
     """
     Returns list of valid nodes
     """
-    print(ratio_minority_in_all)
     pagerank = nx.pagerank(G)
     sorted_nodes = sorted(pagerank, key=pagerank.get, reverse=True)
     top_10_percent = len(G.nodes()) // 10
