@@ -9,7 +9,6 @@ import math
 # local imports
 from utils.metrics import Recorder
 
-# Hi
 
 # methods
 WAGNER = "from methods import Wagner2022 as Method"
