@@ -52,7 +52,7 @@ PERCENT30 = "30percent"
 methods = [ WAGNER ]
 datasets = [FACEBOOK]
 #alg_imports = [NODESIM,FAIRWALK,FIXEDCW,MINWALK,MINWALKNOP]
-alg_imports = [NODE2VEC,PPR,ULOCALPPR,NLOCALPPR,PLOCALPPR]
+alg_imports = [PPR,ULOCALPPR,NLOCALPPR,PLOCALPPR]
 minority_percentages = [PERCENT05]
 
 # Constants for I/O
@@ -138,10 +138,11 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
         recorder.record_metrics(nx_g.copy())
 
         initial = {}
-        with open(f"../1218/{percent}/final_PR_node2vec_{basename}.txt", 'r') as file:
-            for line in file:
-                nodeid, nodevalue = line.strip().split(':')
-                initial[int(nodeid)] = float(nodevalue)
+        # Alex comment out
+        # with open(f"../1218/{percent}/final_PR_node2vec_{basename}.txt", 'r') as file:
+        #     for line in file:
+        #         nodeid, nodevalue = line.strip().split(':')
+        #         initial[int(nodeid)] = float(nodevalue)
         if i==ITERATIONS:
             name1 = f"../1218/{percent}/final_PR_{alg.NAME}_{basename}.txt"
             final = nx.pagerank(nx_g)
@@ -152,9 +153,10 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
             top_10_percent = len(nx_g.nodes()) // 10
             top_nodes = sorted_nodes[:top_10_percent]
             VIS_M_End = len([node for node in top_nodes if node in minorities])/len(top_nodes)
-            
-            l1_norm = sum(abs(initial[node] - final[node]) for node in initial)
-            l2_norm = math.sqrt(sum((initial[node] - final[node])**2 for node in initial))
+
+            # Alex comment out            
+            # l1_norm = sum(abs(initial[node] - final[node]) for node in initial)
+            # l2_norm = math.sqrt(sum((initial[node] - final[node])**2 for node in initial))
             with open(f"../1218/{percent}/record.txt","a") as f1:
                 f1.write(f"{alg.NAME}")
                 f1.write(f"  {basename}")
@@ -162,12 +164,76 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
                 f1.write("Begin VIS_M: "+str(VIS_M_Begin)+"\n")
                 f1.write("After VIS_M: "+str(VIS_M_End)+"\n")
                 f1.write("VIS_M increased: "+str(VIS_M_End-VIS_M_Begin)+"\n")
-                f1.write("l1_norm: "+str(l1_norm)+"\n")
-                f1.write("l2_norm: "+str(l2_norm)+"\n\n")
+                # Alex comment out
+                # f1.write("l1_norm: "+str(l1_norm)+"\n")
+                # f1.write("l2_norm: "+str(l2_norm)+"\n\n")
         if VERBOSE and i % 2 == 0:
             print(f"{i}: {nx_g}")
     
     return nx_g
+
+
+
+
+
+# # methods
+# WAGNER = "from methods import Wagner2022 as Method"
+# OTHERMETHOD = "from methods import OtherMethod as Method" # just an example for now
+
+# # datasets
+# CONGRESS = "congress", True
+# EMAIL_EU = "email_eu", True
+# WIKI_VOTE = "wiki_vote", True
+# FACEBOOK = "facebook", False
+# LASTFM = "lastfm", False
+# DEEZER = "deezer", False
+
+# # walk based algorithms
+# NODE2VEC = "import algs.node2vec as alg"
+# NODESIM = "import algs.nodesim as alg"
+# FAIRWALK = "import algs.fairwalk as alg"
+
+# CROSSWALK = "import algs.crosswalk as alg"
+# NEWCW = "import algs.newcw as alg"
+# FIXEDNEWCW1 = "import algs.fixednewcw1 as alg"
+# FIXEDNEWCW2 = "import algs.fixednewcw2 as alg"
+# MINWALK = "import algs.mergecw as alg"
+# MINWALKNOP = "import algs.MinWalknop as alg"
+# TESTWALK = "import algs.TestWalk as alg"
+# SIMPLEWALK = "import algs.minwalk as alg"
+# # pagerank based algorithms
+# PPR = "import algs.ppr as alg"
+# ULOCALPPR = "import algs.ulocal_fair_ppr as alg"
+# NLOCALPPR = "import algs.nlocal_fair_ppr as alg"
+# PLOCALPPR = "import algs.plocal_fair_ppr as alg"
+
+# PERCENT05 = "05percent"
+# PERCENT10 = "10percent"
+# PERCENT15 = "15percent"
+# PERCENT20 = "20percent"
+# PERCENT25 = "25percent"
+# PERCENT30 = "30percent"
+# #ALPHA = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# #BETA = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# # to test
+# methods = [ WAGNER ]
+# datasets = [FACEBOOK]
+# #alg_imports = [NODESIM,FAIRWALK,FIXEDCW,MINWALK,MINWALKNOP]
+# alg_imports = [NODE2VEC,PPR,ULOCALPPR,NLOCALPPR,PLOCALPPR]
+# minority_percentages = [PERCENT05]
+
+# # Constants for I/O
+# INPUT_DIR = "../input"
+# OUTPUT_DIR = "../1218"
+
+
+class ParseDatasetPairs(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        # Split each value by comma and parse into a tuple
+        parsed_values = [tuple(val.split(',')) for val in values]
+        # Convert the second item in each tuple from string to boolean
+        parsed_values = [(name, bool_str.lower() == 'True') for name, bool_str in parsed_values]
+        setattr(namespace, self.dest, parsed_values)
 
 
 if __name__ == "__main__":
@@ -175,11 +241,32 @@ if __name__ == "__main__":
     parser.add_argument("--iterations", type=int, default=30, help="Number of iterations")
     parser.add_argument("--continue", dest="reset", action="store_false", help="Continue evolution from last iteration")
     parser.add_argument("--silent", dest="verbose", action="store_false", help="Silence output")
+    parser.add_argument("--minority_percentages", type=str, default="05percent", help="Minority percentages")
+    parser.add_argument("--algorithms", nargs='+', type=str, default=["Algorithm1"], help="List of algorithms")
+    parser.add_argument("--datasets", nargs='+', action=ParseDatasetPairs, help="List of datasets and their types (name,is_directed)")
+
     args = parser.parse_args()
 
     RESET_EVOLUTION = args.reset
     ITERATIONS = args.iterations
     VERBOSE = args.verbose
+
+    minority_percentages = [args.minority_percentages]
+    algorithms = args.algorithms
+    alg_imports = [f'import algs.{alg} as alg' for alg in algorithms]
+
+    datasets = args.datasets
+
+    print(f"Reset evolution: {RESET_EVOLUTION}")
+    print(f"Iterations: {ITERATIONS}")
+    print(f"Verbose: {VERBOSE}")
+    print(f"Minority Percentages: {minority_percentages}")
+    print(f"Algorithms: {algorithms}")
+    print(f"Algorithms: {alg_imports}")
+    print(f"Datasets: {datasets}")
+
+    # exit()
+
 
     for percent in minority_percentages:
         # output directory for this minority percentage
@@ -210,7 +297,7 @@ if __name__ == "__main__":
 
                     # file paths
                     ouput_prefix = f"{basename}.{Method.NAME}.{alg.NAME}"
-                    minorities_path = os.path.join(INPUT_DIR, basename + ".minorities")
+                    minorities_path = os.path.join(INPUT_DIR, basename + f"{percent}.minorities")
                     edgelist_path = os.path.join(INPUT_DIR, basename + ".txt")
                     evolved_edgelist_path = os.path.join(OUTPUT_DIR, ouput_prefix + ".txt")
 
