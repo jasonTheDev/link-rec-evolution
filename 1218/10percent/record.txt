@@ -1,0 +1,4 @@
+ulocal_fair_ppr  facebook
+Begin VIS_M: 0.04218362282878412
+After VIS_M: 0.03722084367245657
+VIS_M increased: -0.004962779156327549
