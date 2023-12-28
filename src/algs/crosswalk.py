@@ -7,7 +7,7 @@ WALK_LENGTH = 40  # Saxena uses 80
 ALPHA = 0.5
 P = 2
 
-NAME = f"CrossWalk_Alpha_{ALPHA:.2f}_P_{P}" # For Driver
+NAME = "crosswalk" # For Driver
 
 # classic random walk for cross walk initialization
 def random_walk(G, node):
@@ -127,10 +127,12 @@ def initialize(G, directed, protected):
     nx.set_node_attributes(G, communities, 'community')
     return G
     
-def predict(nx_g, directed, nodes):
+def predict(nx_g, directed, nodes, param1=ALPHA, param2=P):
     """
     Returns list of predicted edges.
     """
+    ALPHA = param1
+    P = param2
     walks = walkforeachnode(nx_g)
     node_vectors = embedding.word2vec(walks)
     predictions = embedding.predict_most_similar(nx_g, node_vectors, directed, nodes)

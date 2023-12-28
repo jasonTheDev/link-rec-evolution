@@ -45,7 +45,7 @@ def simulate_walks(nx_g):
     return walks
 
 
-def predict(nx_g, directed, nodes):
+def predict(nx_g, directed, nodes, param1=None, param2=None):
     """
     Returns list of predicted edges.
     """

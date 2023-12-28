@@ -48,6 +48,12 @@ PERCENT25 = "25percent"
 PERCENT30 = "30percent"
 #ALPHA = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 #BETA = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
+# These can be alpha and beta for NodeSim, or alpha and p for CrossWalk
+# For the other algorithms, these are not used at the moment
+PARAM1 = 0.5
+PARAM2 = 0.5
+
 # to test
 methods = [ WAGNER ]
 datasets = [FACEBOOK]
@@ -119,7 +125,7 @@ def evolve_network(nx_g, directed, minorities, recorder, method):
             top_nodes = sorted_nodes[:top_10_percent]
             VIS_M_Begin = len([node for node in top_nodes if node in minorities])/len(top_nodes)
         to_predict = method.nodes_to_predict(nx_g)
-        predictions = alg.predict(nx_g, directed=directed, nodes=to_predict)
+        predictions = alg.predict(nx_g, directed=directed, nodes=to_predict, param1=PARAM1, param2=PARAM2)
 
         # with open(predfile, 'w') as file:
         #     for tup in predictions:
@@ -244,6 +250,8 @@ if __name__ == "__main__":
     parser.add_argument("--minority_percentages", type=str, default="05percent", help="Minority percentages")
     parser.add_argument("--algorithms", nargs='+', type=str, default=["Algorithm1"], help="List of algorithms")
     parser.add_argument("--datasets", nargs='+', action=ParseDatasetPairs, help="List of datasets and their types (name,is_directed)")
+    parser.add_argument("--param1", type=float, default=0.5, help="Description for param1")
+    parser.add_argument("--param2", type=float, default=0.5, help="Description for param2")
 
     args = parser.parse_args()
 
@@ -257,6 +265,9 @@ if __name__ == "__main__":
 
     datasets = args.datasets
 
+    PARAM1 = args.param1
+    PARAM2 = args.param2
+
     print(f"Reset evolution: {RESET_EVOLUTION}")
     print(f"Iterations: {ITERATIONS}")
     print(f"Verbose: {VERBOSE}")
@@ -264,6 +275,8 @@ if __name__ == "__main__":
     print(f"Algorithms: {algorithms}")
     print(f"Algorithms: {alg_imports}")
     print(f"Datasets: {datasets}")
+    print(f"Param1: {PARAM1}")
+    print(f"Param2: {PARAM2}")
 
     # exit()
 
@@ -297,6 +310,12 @@ if __name__ == "__main__":
 
                     # file paths
                     ouput_prefix = f"{basename}.{Method.NAME}.{alg.NAME}"
+                    
+                    if alg.NAME == "crosswalk":
+                        ouput_prefix += f".alpha{PARAM1}.p{PARAM2}"
+                    elif alg.NAME == "nodesim":
+                        ouput_prefix += f".alpha{PARAM1}.beta{PARAM2}"
+                    
                     minorities_path = os.path.join(INPUT_DIR, basename + f"{percent}.minorities")
                     edgelist_path = os.path.join(INPUT_DIR, basename + ".txt")
                     evolved_edgelist_path = os.path.join(OUTPUT_DIR, ouput_prefix + ".txt")

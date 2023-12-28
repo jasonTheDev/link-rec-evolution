@@ -355,6 +355,6 @@ def initialize(G, directed, protected):
     return G
     
     
-def predict(G, directed,nodes):
+def predict(G, directed,nodes, param1=None, param2=None):
     ulfpr = ULFPRfromPaper(graph = G, undirected = not directed)
     return list(ulfpr.process(nodes))

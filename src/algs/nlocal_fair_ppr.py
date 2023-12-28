@@ -198,6 +198,6 @@ def initialize(G, directed, protected):
     return G
     
     
-def predict(G, directed,nodes):
+def predict(G, directed,nodes, param1=None, param2=None):
     nlfpr = NLFPRfromPaper(graph = G, undirected = not directed)
     return list(nlfpr.process(nodes))

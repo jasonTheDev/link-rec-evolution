@@ -15,7 +15,7 @@ def initialize(G, directed, protected):
     return G
 
 
-def predict(G, directed, nodes):
+def predict(G, directed, nodes, param1=None, param2=None):
     """
     Predict links using personalized pagerank.
     """

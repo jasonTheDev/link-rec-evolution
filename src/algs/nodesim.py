@@ -113,10 +113,12 @@ def simulate_walks(G):
     return walks
 
 
-def predict(nx_g, directed, nodes):
+def predict(nx_g, directed, nodes, param1=ALPHA, param2=BETA):
     """
     Returns list of predicted edges.
     """
+    ALPHA = param1
+    BETA = param2
     walks = simulate_walks(nx_g)
     node_vectors = embedding.word2vec(walks)
     predictions = embedding.predict_most_similar(nx_g, node_vectors, directed, nodes)

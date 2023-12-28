@@ -175,7 +175,7 @@ def initialize(G,directed, protected):
 
     return G
     
-def predict(nx_g, directed, nodes):
+def predict(nx_g, directed, nodes, param1=None, param2=None):
     """
     Returns list of predicted edges.
     """
