@@ -1,4 +1,4 @@
-# Recommendation Algorithms Effect on Graph Evolution
+# Recommendation Algorithms' Effect on Graph Evolution
 ## Useage
 
 Multiple datasets, algorithms and methods can be evaluated using either the `Driver_Multi_Evolution.ipynb` notebook or the `driver_multi_evolution.py` script.
